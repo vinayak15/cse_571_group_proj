@@ -132,7 +132,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.episodeRewards += deltaReward
         self.update(state,action,nextState,deltaReward)
 
-    def startEpisode(self):
+    def startEpisode(self,state):
         """
           Called by environment when new episode is starting
         """
@@ -214,7 +214,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         return state
 
     def registerInitialState(self, state):
-        self.startEpisode()
+        self.startEpisode(state = state)
         if self.episodesSoFar == 0:
             print('Beginning %d episodes of Training' % (self.numTraining))
 
