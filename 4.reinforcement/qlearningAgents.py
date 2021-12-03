@@ -440,18 +440,11 @@ class ApproximateSarsaAgent(PacmanSarsaAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-
-        # q_prev = (1 - self.alpha) * self.getQValue(state, action)
-        # q_target = (self.alpha * (reward + self.discount * self.computeValueFromQValues(nextState, nextAction)))
-        # self.Q_values[(state, action)] = q_prev + q_target
-        # # print("Setting Current Action = " + str(nextAction))
-        # self.setCurrentAction(nextAction)
-
         nextAction = self.epsilonGreedyAction(nextState)
-        # print(nextState)
-        # print("hello")
-        # print(nextAction)
         features = self.featExtractor.getFeatures(state, action)
+
+        # if current state = terminal state then computeValueFromQValues() returns 0,
+        # so that update is correct in both cases
         difference = reward + (self.discount * self.computeValueFromQValues(nextState, nextAction)) - self.getQValue(state, action)
 
         for feature in features:
@@ -513,7 +506,7 @@ class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
         gamma    - discount factor
         numTraining - number of training episodes, i.e. no learning after these many episodes
         """
-        args['epsilon'] = 0
+        args['epsilon'] = epsilon
         args['gamma'] = gamma
         args['alpha'] = alpha
         args['numTraining'] = numTraining
