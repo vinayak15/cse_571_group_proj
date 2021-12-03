@@ -316,6 +316,9 @@ class SarsaAgent(ReinforcementAgent):
         # print("Setting Current Action = " + str(nextAction))
         self.setCurrentAction(nextAction)
 
+        # for key,value in self.Q_values.items():
+        #     print(key,value)
+
     def getPolicy(self, state):
         return self.epsilonGreedyAction(state)
 
@@ -345,30 +348,11 @@ class SarsaAgent(ReinforcementAgent):
         if util.flipCoin(self.epsilon):
             # print("Random action")
             action = random.choice(legalActions)
-            # return "None"
 
         else:
             action = self.computeActionFromQValues(state)
 
         return action
-        # max_action = None
-        # max_q = None
-        #
-        # actions = self.getLegalActions(state)
-        # print(actions)
-        #
-        # if len(actions) == 0:
-        #     return None
-        #
-        # for action in actions:
-        #
-        #     q = self.getQValue(state, action)
-        #
-        #     if max_q is None or q > max_q:
-        #         max_q = q
-        #         max_action = action
-        #
-        # return max_action
 
     def startEpisode(self,state):
         # print(state)
@@ -476,3 +460,79 @@ class ApproximateSarsaAgent(PacmanSarsaAgent):
         # print("Updating current action = " + str(nextAction))
         self.setCurrentAction(nextAction)
 
+
+class SarsaLamdaAgent(SarsaAgent):
+
+    def __init__(self, **args):
+        "You can initialize Q-values here..."
+        SarsaAgent.__init__(self, **args)
+
+        self.eligibility_Trace = util.Counter()
+        self.lamda = 0.5
+        self.visited = []
+
+    def update(self, state, action, nextState, reward):
+        """
+          The parent class calls this to observe a
+          state = action => nextState and reward transition.
+          You should do your Q-Value update here
+
+          NOTE: You should never call this function,
+          it will be called on your behalf
+        """
+        nextAction = self.epsilonGreedyAction(nextState)
+
+        diff = reward + self.discount * self.computeValueFromQValues(nextState,nextAction) - self.getQValue(state,action)
+        self.eligibility_Trace[(state, action)] = (1 - self.alpha) * self.eligibility_Trace[(state, action)] + 1
+
+        if (state, action) not in self.visited:
+            self.visited.append((state,action))
+
+        for key in self.visited:
+            # print((key[0],key[1]))
+            self.Q_values[key] += self.alpha * diff * self.eligibility_Trace[key]
+            self.eligibility_Trace[key] = self.discount * self.lamda * self.eligibility_Trace[key]
+
+        self.setCurrentAction(nextAction)
+
+    def startEpisode(self,state):
+        SarsaAgent.startEpisode(self,state)
+        self.visited.clear()
+
+class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
+    "Exactly the same as QLearningAgent, but with different default parameters"
+
+    def __init__(self, epsilon=0.05,gamma=0.8,alpha=0.2, numTraining=0, **args):
+        """
+        These default parameters can be changed from the pacman.py command line.
+        For example, to change the exploration rate, try:
+            python pacman.py -p PacmanQLearningAgent -a epsilon=0.1
+
+        alpha    - learning rate
+        epsilon  - exploration rate
+        gamma    - discount factor
+        numTraining - number of training episodes, i.e. no learning after these many episodes
+        """
+        args['epsilon'] = 0
+        args['gamma'] = gamma
+        args['alpha'] = alpha
+        args['numTraining'] = numTraining
+        self.index = 0  # This is always Pacman
+        SarsaLamdaAgent.__init__(self, **args)
+
+    def getAction(self, state):
+        """
+        Simply calls the getAction method of QLearningAgent and then
+        informs parent of action for Pacman.  Do not change or remove this
+        method.
+        """
+
+        action = SarsaLamdaAgent.getCurrentAction(self)
+        # print("Get and do Action = " + str(action))
+        self.doAction(state,action)
+        return action
+
+    def startEpisode(self,state):
+        if self.episodesSoFar % 10 == 0:
+            print("episode = " + str(self.episodesSoFar))
+        SarsaLamdaAgent.startEpisode(self,state)

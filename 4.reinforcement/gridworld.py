@@ -507,6 +507,21 @@ if __name__ == '__main__':
                       'epsilon': opts.epsilon,
                       'actionFn': actionFn}
         a = qlearningAgents.SarsaAgent(**qLearnOpts)
+
+    elif opts.agent == 'slamda':
+
+        # Sarsa agent for gridworld
+
+        #env.getPossibleActions, opts.discount, opts.learningRate, opts.epsilon
+        #simulationFn = lambda agent, state: simulation.GridworldSimulation(agent,state,mdp)
+        gridWorldEnv = GridworldEnvironment(mdp)
+        actionFn = lambda state: mdp.getPossibleActions(state)
+        qLearnOpts = {'gamma': opts.discount,
+                      'alpha': opts.learningRate,
+                      'epsilon': opts.epsilon,
+                      'actionFn': actionFn}
+        a = qlearningAgents.SarsaLamdaAgent(**qLearnOpts)
+
     elif opts.agent == 'random':
         # # No reason to use the random agent without episodes
         if opts.episodes == 0:
@@ -563,6 +578,7 @@ if __name__ == '__main__':
                 displayCallback = lambda state: display.displayValues(a, state, "CURRENT VALUES")
             if opts.agent == 'q': displayCallback = lambda state: display.displayQValues(a, state, "CURRENT Q-VALUES")
             if opts.agent == 's': displayCallback = lambda state: display.displayQValues(a, state, "CURRENT Q-VALUES")
+            if opts.agent == 'slamda': displayCallback = lambda state: display.displayQValues(a, state, "CURRENT Q-VALUES")
 
     messageCallback = lambda x: printString(x)
     if opts.quiet:
