@@ -162,6 +162,9 @@ class GameState:
             raise Exception("Invalid index passed to getGhostState")
         return self.data.agentStates[agentIndex]
 
+    def getScaredGhosts(self):
+        return [s.scaredTimer for s in self.getGhostStates()]
+
     def getGhostPosition(self, agentIndex):
         if agentIndex == 0:
             raise Exception("Pacman's index passed to getGhostPosition")

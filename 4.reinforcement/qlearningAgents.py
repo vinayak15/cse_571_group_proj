@@ -95,7 +95,7 @@ class QLearningAgent(ReinforcementAgent):
         max_q = None
 
         actions = self.getLegalActions(state)
-        print(actions)
+        # print(actions)
 
         if len(actions) == 0:
             return None
@@ -223,9 +223,9 @@ class ApproximateQAgent(PacmanQAgent):
         "*** YOUR CODE HERE ***"
 
         nextAction = self.computeActionFromQValues(nextState)
-        print(nextState)
-        print("hello")
-        print("nextAction = " + str(nextAction))
+        # print(nextState)
+        # print("hello")
+        # print("nextAction = " + str(nextAction))
         features = self.featExtractor.getFeatures(state, action)
         difference = reward + (self.discount * self.computeValueFromQValues(nextState,nextAction)) - self.getQValue(state, action)
 
@@ -364,12 +364,12 @@ class SarsaAgent(ReinforcementAgent):
 
     def epsilonGreedyAction(self,state):
 
-        print("Get Epsilon Greedy Action")
+        # print("Get Epsilon Greedy Action")
 
         legalActions = self.getLegalActions(state)
-        print(self)
-        print(state)
-        print(legalActions)
+        # print(self)
+        # print(state)
+        # print(legalActions)
         action = "None"
         if len(legalActions) == 0:
             return action
@@ -496,14 +496,15 @@ class ApproximateSarsaAgent(PacmanSarsaAgent):
         # self.setCurrentAction(nextAction)
 
         nextAction = self.epsilonGreedyAction(nextState)
-        print(nextState)
-        print("hello")
-        print(nextAction)
+        # print(nextState)
+        # print("hello")
+        # print(nextAction)
         features = self.featExtractor.getFeatures(state, action)
         difference = reward + (self.discount * self.computeValueFromQValues(nextState, nextAction)) - self.getQValue(state, action)
 
         for feature in features:
             self.weights[feature] += self.alpha * difference * features[feature]
 
-        print("Updating current action = " + str(nextAction))
+        # print("Updating current action = " + str(nextAction))
         self.setCurrentAction(nextAction)
+
