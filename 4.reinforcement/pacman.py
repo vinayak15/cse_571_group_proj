@@ -129,8 +129,8 @@ class GameState:
         # Book keeping
         state.data._agentMoved = agentIndex
         state.data.score += state.data.scoreChange
-        GameState.explored.add(self)
-        GameState.explored.add(state)
+        #GameState.explored.add(self)
+        #GameState.explored.add(state)
         return state
 
     def getLegalPacmanActions(self):
