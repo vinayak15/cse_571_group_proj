@@ -341,7 +341,8 @@ def runEpisode(agent, environment, discount, decision, display, message, pause, 
     returns = 0
     totalDiscount = 1.0
     environment.reset()
-    if 'startEpisode' in dir(agent): agent.startEpisode()
+    state = environment.getCurrentState()
+    if 'startEpisode' in dir(agent): agent.startEpisode(state)
     message("BEGINNING EPISODE: "+str(episode)+"\n")
     while True:
 
@@ -493,6 +494,19 @@ if __name__ == '__main__':
                       'epsilon': opts.epsilon,
                       'actionFn': actionFn}
         a = qlearningAgents.QLearningAgent(**qLearnOpts)
+    elif opts.agent == 's':
+
+        # Sarsa agent for gridworld
+
+        #env.getPossibleActions, opts.discount, opts.learningRate, opts.epsilon
+        #simulationFn = lambda agent, state: simulation.GridworldSimulation(agent,state,mdp)
+        gridWorldEnv = GridworldEnvironment(mdp)
+        actionFn = lambda state: mdp.getPossibleActions(state)
+        qLearnOpts = {'gamma': opts.discount,
+                      'alpha': opts.learningRate,
+                      'epsilon': opts.epsilon,
+                      'actionFn': actionFn}
+        a = qlearningAgents.SarsaAgent(**qLearnOpts)
     elif opts.agent == 'random':
         # # No reason to use the random agent without episodes
         if opts.episodes == 0:
@@ -548,6 +562,7 @@ if __name__ == '__main__':
             if opts.agent in ('random', 'value', 'asynchvalue', 'priosweepvalue'):
                 displayCallback = lambda state: display.displayValues(a, state, "CURRENT VALUES")
             if opts.agent == 'q': displayCallback = lambda state: display.displayQValues(a, state, "CURRENT Q-VALUES")
+            if opts.agent == 's': displayCallback = lambda state: display.displayQValues(a, state, "CURRENT Q-VALUES")
 
     messageCallback = lambda x: printString(x)
     if opts.quiet:
