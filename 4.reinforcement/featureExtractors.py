@@ -79,7 +79,6 @@ class SimpleExtractor(FeatureExtractor):
         ghosts = state.getGhostPositions()
         capsules = state.getCapsules()
         scaredghosts = state.getScaredGhosts()
-        sittingOnCapsule = 0
 
         features = util.Counter()
 
@@ -90,16 +89,31 @@ class SimpleExtractor(FeatureExtractor):
         dx, dy = Actions.directionToVector(action)
         next_x, next_y = int(x + dx), int(y + dy)
 
-        features["scaredghosts"] = 1.0 if scaredghosts[0] > 0 else 0.0
-        # print(features["scaredghosts"])
+        for timer in scaredghosts:
+            # print(timer)
+            if timer > 0:
+                features["scaredghosts"] = 0.0
+                break
+            else:
+                features["scaredghosts"] = 1.0
+
+        for cx,cy in capsules:
+            if cx == next_x and cy == next_y:
+                features["eats-capsules"] = 1.0
+                break
 
         # count the number of ghosts 1-step away
         features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
 
         # if a scared ghost 1 step away
         if features["#-of-ghosts-1-step-away"] and features["scaredghosts"]:
-            # print("eating ghost")
-            features["eats-ghosts"] = 1.0
+            for gx,gy in ghosts:
+                if gx == next_x and gy == next_y:
+                    # print("eating ghost")
+                    features["eats-ghosts"] = 1.0
+                    features["scaredghosts"] = 0.0
+                    break
+
 
         # if there is no danger of ghosts then add the food feature
         if (not features["#-of-ghosts-1-step-away"] or features["scaredghosts"]) and food[next_x][next_y]:
