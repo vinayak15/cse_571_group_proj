@@ -529,3 +529,81 @@ class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
         if self.episodesSoFar % 10 == 0:
             print("episode = " + str(self.episodesSoFar))
         SarsaLamdaAgent.startEpisode(self,state)
+
+
+class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
+    """
+       ApproximateQLearningAgent
+
+       You should only have to overwrite getQValue
+       and update.  All other QLearningAgent functions
+       should work as is.
+    """
+
+    def __init__(self, extractor='IdentityExtractor', **args):
+        self.featExtractor = util.lookup(extractor, globals())()
+        PacmanSarsaLamdaAgent.__init__(self, **args)
+        self.weights = util.Counter()
+        self.Q_old = 0
+
+    def getWeights(self):
+        return self.weights
+
+    def getQValue(self, state, action):
+        """
+          Should return Q(state,action) = w * featureVector
+          where * is the dotProduct operator
+        """
+        "*** YOUR CODE HERE ***"
+
+        features = self.featExtractor.getFeatures(state, action)
+
+        q_vec = [self.weights[feature] * features[feature] for feature in features]
+
+        return sum(q_vec)
+
+    def getQValueOfFeature(self,features):
+        q_vec = [self.weights[feature] * features[feature] for feature in features]
+        return sum(q_vec)
+
+    def innerproduct(self,state,features):
+        currentFeature = self.featExtractor.getFeatures(state, self.getCurrentAction())
+        res = [self.eligibility_Trace[feature] * currentFeature[feature] for feature in features]
+        return sum(res)
+
+
+    def update(self, state, action, nextState, reward):
+        """
+           Should update your weights based on transition
+        """
+        "*** YOUR CODE HERE ***"
+        currentFeature = self.featExtractor.getFeatures(state, self.getCurrentAction())
+        nextAction = self.epsilonGreedyAction(nextState)
+        currentQValue = self.getQValueOfFeature(currentFeature)
+
+        if(nextState == "None" or nextState == None or nextAction == "None"):
+            nextQValue = 0
+        else:
+            nextFeature = self.featExtractor.getFeatures(nextState, nextAction)
+            nextQValue = self.getQValueOfFeature(nextFeature)
+
+        diff = reward + self.discount * nextQValue - currentQValue
+
+        # print(currentFeature)
+        for feature in currentFeature:
+            # print(feature)
+            self.eligibility_Trace[feature] = self.discount * self.lamda * self.eligibility_Trace[feature]
+            self.eligibility_Trace[feature] += (1 - self.alpha * self.discount * self.lamda * self.innerproduct(state, feature)) * currentFeature[feature]
+            self.weights[feature] += self.alpha * (diff + currentQValue - self.Q_old) * self.eligibility_Trace[feature]
+            self.weights[feature] -= self.alpha * (currentQValue - self.Q_old) * currentFeature[feature]
+
+        # print("Updating current action = " + str(nextAction))
+        self.setCurrentAction(nextAction)
+        self.Q_old = nextQValue
+
+    def startEpisode(self,state):
+        # sets firstAction in SarsaAgent
+        PacmanSarsaLamdaAgent.startEpisode(self,state)
+        self.eligibility_Trace.clear()
+        self.Q_old = 0
+

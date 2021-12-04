@@ -72,13 +72,17 @@ class SimpleExtractor(FeatureExtractor):
     - whether a ghost is one step away
     """
 
+    def isInVicinity(self,x1,y1,x2,y2):
+        if (abs(x1 - x2)) + (abs(y1 - y2)) <=2 :
+            return True
+        return False
+
     def getFeatures(self, state, action):
         # extract the grid of food and wall locations and get the ghost locations
         food = state.getFood()
         walls = state.getWalls()
         ghosts = state.getGhostPositions()
-        capsules = state.getCapsules()
-        scaredghosts = state.getScaredGhosts()
+        ghostsStates = state.getGhostStates()
 
         features = util.Counter()
 
@@ -89,36 +93,22 @@ class SimpleExtractor(FeatureExtractor):
         dx, dy = Actions.directionToVector(action)
         next_x, next_y = int(x + dx), int(y + dy)
 
-        for timer in scaredghosts:
-            # print(timer)
-            if timer > 0:
-                features["scaredghosts"] = 0.0
-                break
-            else:
-                features["scaredghosts"] = 1.0
+        for gs in ghostsStates:
+            isScared = gs.scaredTimer
+            pos = gs.getPosition()
+            gx = int(pos[0])
+            gy = int(pos[1])
+            if self.isInVicinity(gx,gy,next_x,next_y) and not isScared:
+                features["Dangerous-ghost-nearby"] += 1
 
-        for cx,cy in capsules:
-            if cx == next_x and cy == next_y:
-                features["eats-capsules"] = 1.0
-                break
+        # exit()
 
         # count the number of ghosts 1-step away
-        features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-
-        # if a scared ghost 1 step away
-        if features["#-of-ghosts-1-step-away"] and features["scaredghosts"]:
-            for gx,gy in ghosts:
-                if gx == next_x and gy == next_y:
-                    # print("eating ghost")
-                    features["eats-ghosts"] = 1.0
-                    features["scaredghosts"] = 0.0
-                    break
-
+        # features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
 
         # if there is no danger of ghosts then add the food feature
-        if (not features["#-of-ghosts-1-step-away"] or features["scaredghosts"]) and food[next_x][next_y]:
+        if not features["Dangerous-ghost-nearby"] and food[next_x][next_y]:
             features["eats-food"] = 1.0
-
 
         dist = closestFood((next_x, next_y), food, walls)
         if dist is not None:
