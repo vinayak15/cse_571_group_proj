@@ -208,8 +208,7 @@ class ApproximateQAgent(PacmanQAgent):
         # did we finish training?
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
-            # print(self.weights)
-            pass
+            print(self.weights)
 
 
 class SarsaAgent(ReinforcementAgent):
@@ -461,7 +460,7 @@ class SarsaLamdaAgent(SarsaAgent):
         SarsaAgent.__init__(self, **args)
 
         self.eligibility_Trace = util.Counter()
-        self.lamda = 0.5
+        self.lamda = 0.965
         self.visited = []
 
     def update(self, state, action, nextState, reward):
@@ -606,4 +605,10 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
         PacmanSarsaLamdaAgent.startEpisode(self,state)
         self.eligibility_Trace.clear()
         self.Q_old = 0
+
+    def final(self, state):
+        PacmanSarsaLamdaAgent.final(self,state)
+        if self.episodesSoFar == self.numTraining:
+            # you might want to print your weights here for debugging
+            print(self.weights)
 

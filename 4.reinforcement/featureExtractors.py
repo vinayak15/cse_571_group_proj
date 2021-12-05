@@ -93,14 +93,18 @@ class SimpleExtractor(FeatureExtractor):
         dx, dy = Actions.directionToVector(action)
         next_x, next_y = int(x + dx), int(y + dy)
 
+        ghostDistance = 0
         for gs in ghostsStates:
             isScared = gs.scaredTimer
             pos = gs.getPosition()
             gx = int(pos[0])
             gy = int(pos[1])
+            if not isScared:
+                ghostDistance += abs(next_x-gx) + abs(next_y-gy)
             if self.isInVicinity(gx,gy,next_x,next_y) and not isScared:
                 features["Dangerous-ghost-nearby"] += 1
 
+        features['ghostDistance'] = float(ghostDistance) / (walls.width * walls.height)
         # exit()
 
         # count the number of ghosts 1-step away
