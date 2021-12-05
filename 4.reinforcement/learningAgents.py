@@ -140,6 +140,9 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.lastAction = None
         self.episodeRewards = 0.0
 
+        self.qvalue = 0
+        self.steps = 0
+
     def stopEpisode(self):
         """
           Called by environment when episode is done
@@ -154,6 +157,10 @@ class ReinforcementAgent(ValueEstimationAgent):
             self.epsilon = 0.0    # no exploration
             self.alpha = 0.0      # no learning
 
+        self.rewards.append(self.episodeRewards)        #For convergence checking
+
+        qvalue = self.qvalue /self.steps
+        self.average_qvalues.append(qvalue)
     def isInTraining(self):
         return self.episodesSoFar < self.numTraining
 
@@ -179,6 +186,10 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.epsilon = float(epsilon)
         self.alpha = float(alpha)
         self.discount = float(gamma)
+
+        self.rewards = []
+        self.average_qvalues = []
+        self.qvalue = 0.0
 
     ################################
     # Controls needed for Crawler  #

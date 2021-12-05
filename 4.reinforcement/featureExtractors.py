@@ -17,6 +17,7 @@
 from game import Directions, Actions
 import util
 
+global_capsules= []
 class FeatureExtractor:
     def getFeatures(self, state, action):
         """
@@ -73,7 +74,8 @@ class SimpleExtractor(FeatureExtractor):
     """
 
     def isInVicinity(self,x1,y1,x2,y2):
-        if (abs(x1 - x2)) + (abs(y1 - y2)) <=2 :
+        limit = 2
+        if (abs(x1 - x2)) + (abs(y1 - y2)) <=limit :
             return True
         return False
 
@@ -84,6 +86,12 @@ class SimpleExtractor(FeatureExtractor):
         ghosts = state.getGhostPositions()
         ghostsStates = state.getGhostStates()
 
+        capsules = state.getCapsules()
+
+        for cap in capsules:
+            if cap not in global_capsules:
+                global_capsules.append(cap)
+
         features = util.Counter()
 
         features["bias"] = 1.0
@@ -93,14 +101,24 @@ class SimpleExtractor(FeatureExtractor):
         dx, dy = Actions.directionToVector(action)
         next_x, next_y = int(x + dx), int(y + dy)
 
+        for cap in capsules:
+            capx = cap[0]
+            capy = cap[1]
+            if capx==x and capy==y:
+                features["eats-capsule"] = 1.0
+
+        ghostDistance = 0
         for gs in ghostsStates:
             isScared = gs.scaredTimer
             pos = gs.getPosition()
             gx = int(pos[0])
             gy = int(pos[1])
+            # if not isScared:
+            #     ghostDistance += abs(next_x-gx) + abs(next_y-gy)
             if self.isInVicinity(gx,gy,next_x,next_y) and not isScared:
                 features["Dangerous-ghost-nearby"] += 1
 
+        # features['ghostDistance'] = float(ghostDistance) / (walls.width * walls.height)
         # exit()
 
         # count the number of ghosts 1-step away
