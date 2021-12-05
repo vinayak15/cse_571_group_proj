@@ -16,7 +16,10 @@ from game import *
 from learningAgents import ReinforcementAgent
 from featureExtractors import *
 
-import random,util,math
+import random
+import util
+import math
+
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -38,6 +41,7 @@ class QLearningAgent(ReinforcementAgent):
         - self.getLegalActions(state)
           which returns legal actions for a state
     """
+
     def __init__(self, **args):
         "You can initialize Q-values here..."
         ReinforcementAgent.__init__(self, **args)
@@ -52,7 +56,6 @@ class QLearningAgent(ReinforcementAgent):
         """
         return self.Q_values[(state, action)]
 
-
     def computeValueFromQValues(self, state):
         """
           Returns max_action Q(state,action)
@@ -63,7 +66,7 @@ class QLearningAgent(ReinforcementAgent):
         actions = self.getLegalActions(state)
         max_value = float("-inf")
         for action in actions:
-            q_value = self.getQValue(state,action)
+            q_value = self.getQValue(state, action)
             max_value = max_value if max_value > q_value else q_value
         if max_value == float("-inf"):
             max_value = 0
@@ -84,7 +87,6 @@ class QLearningAgent(ReinforcementAgent):
             max_value = max_value if max_value > q_value else q_value
 
         return max_action
-
 
     def getAction(self, state):
         """
@@ -133,7 +135,7 @@ class QLearningAgent(ReinforcementAgent):
 class PacmanQAgent(QLearningAgent):
     "Exactly the same as QLearningAgent, but with different default parameters"
 
-    def __init__(self, epsilon=0.05,gamma=0.8,alpha=0.2, numTraining=0, **args):
+    def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, **args):
         """
         These default parameters can be changed from the pacman.py command line.
         For example, to change the exploration rate, try:
@@ -157,8 +159,8 @@ class PacmanQAgent(QLearningAgent):
         informs parent of action for Pacman.  Do not change or remove this
         method.
         """
-        action = QLearningAgent.getAction(self,state)
-        self.doAction(state,action)
+        action = QLearningAgent.getAction(self, state)
+        self.doAction(state, action)
         return action
 
 
@@ -170,6 +172,7 @@ class ApproximateQAgent(PacmanQAgent):
        and update.  All other QLearningAgent functions
        should work as is.
     """
+
     def __init__(self, extractor='IdentityExtractor', **args):
         self.featExtractor = util.lookup(extractor, globals())()
         PacmanQAgent.__init__(self, **args)
@@ -232,6 +235,7 @@ class SarsaAgent(ReinforcementAgent):
         - self.getLegalActions(state)
           which returns legal actions for a state
     """
+
     def __init__(self, **args):
         "You can initialize Q-values here..."
         ReinforcementAgent.__init__(self, **args)
@@ -250,8 +254,7 @@ class SarsaAgent(ReinforcementAgent):
         """
         return self.Q_values[(state, action)]
 
-
-    def computeValueFromQValues(self, state,action):
+    def computeValueFromQValues(self, state, action):
         """
           Returns max_action Q(state,action)
           where the max is over legal actions.  Note that if
@@ -262,7 +265,7 @@ class SarsaAgent(ReinforcementAgent):
 
         if len(actions) == 0:
             return 0
-        q_value = self.getQValue(state,action)
+        q_value = self.getQValue(state, action)
         return q_value
 
     def computeActionFromQValues(self, state):
@@ -280,7 +283,6 @@ class SarsaAgent(ReinforcementAgent):
             max_value = max_value if max_value > q_value else q_value
 
         return max_action
-
 
     def getAction(self, state):
         """
@@ -311,7 +313,7 @@ class SarsaAgent(ReinforcementAgent):
         """
         nextAction = self.epsilonGreedyAction(nextState)
         q_prev = (1 - self.alpha) * self.getQValue(state, action)
-        q_target = (self.alpha * (reward + self.discount * self.computeValueFromQValues(nextState,nextAction)))
+        q_target = (self.alpha * (reward + self.discount * self.computeValueFromQValues(nextState, nextAction)))
         self.Q_values[(state, action)] = q_prev + q_target
         # print("Setting Current Action = " + str(nextAction))
         self.setCurrentAction(nextAction)
@@ -324,16 +326,16 @@ class SarsaAgent(ReinforcementAgent):
 
     def getValue(self, state):
         best_action = self.computeActionFromQValues(state)
-        return self.computeValueFromQValues(state,best_action)
+        return self.computeValueFromQValues(state, best_action)
 
     def getCurrentAction(self):
         # print("current Action")
         return self.currentAction
 
-    def setCurrentAction(self,action):
+    def setCurrentAction(self, action):
         self.currentAction = action
 
-    def epsilonGreedyAction(self,state):
+    def epsilonGreedyAction(self, state):
 
         # print("Get Epsilon Greedy Action")
 
@@ -354,11 +356,11 @@ class SarsaAgent(ReinforcementAgent):
 
         return action
 
-    def startEpisode(self,state):
+    def startEpisode(self, state):
         # print(state)
         # print("Start Episode = " + str(self.epsilon))
 
-        ReinforcementAgent.startEpisode(self,state)
+        ReinforcementAgent.startEpisode(self, state)
         firstAction = self.getPolicy(state)
         self.setCurrentAction(firstAction)
 
@@ -369,12 +371,10 @@ class SarsaAgent(ReinforcementAgent):
     #     quit()
 
 
-
-
 class PacmanSarsaAgent(SarsaAgent):
     "Exactly the same as QLearningAgent, but with different default parameters"
 
-    def __init__(self, epsilon=0.05,gamma=0.8,alpha=0.2, numTraining=0, **args):
+    def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, **args):
         """
         These default parameters can be changed from the pacman.py command line.
         For example, to change the exploration rate, try:
@@ -401,8 +401,9 @@ class PacmanSarsaAgent(SarsaAgent):
 
         action = SarsaAgent.getCurrentAction(self)
         # print("Get and do Action = " + str(action))
-        self.doAction(state,action)
+        self.doAction(state, action)
         return action
+
 
 class ApproximateSarsaAgent(PacmanSarsaAgent):
     """
@@ -434,6 +435,89 @@ class ApproximateSarsaAgent(PacmanSarsaAgent):
 
         return sum(q_vec)
 
+    def update(self, state, action, nextState, reward):
+        """
+           Should update your weights based on transition
+        """
+        "*** YOUR CODE HERE ***"
+        nextAction = self.epsilonGreedyAction(nextState)
+        features = self.featExtractor.getFeatures(state, action)
+
+        # if current state = terminal state then computeValueFromQValues() returns 0,
+        # so that update is correct in both cases
+        difference = reward + (self.discount * self.computeValueFromQValues(nextState, nextAction)) - self.getQValue(state, action)
+
+        for feature in features:
+            self.weights[feature] += self.alpha * difference * features[feature]
+
+        # print("Updating current action = " + str(nextAction))
+        self.setCurrentAction(nextAction)
+
+
+class PacmanNStepSarsaAgent(SarsaAgent):
+    "Exactly the same as QLearningAgent, but with different default parameters"
+
+    def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, n_steps=1, **args):
+        """
+        These default parameters can be changed from the pacman.py command line.
+        For example, to change the exploration rate, try:
+            python pacman.py -p PacmanQLearningAgent -a epsilon=0.1
+
+        alpha    - learning rate
+        epsilon  - exploration rate
+        gamma    - discount factor
+        numTraining - number of training episodes, i.e. no learning after these many episodes
+        """
+        args['epsilon'] = epsilon
+        args['gamma'] = gamma
+        args['alpha'] = alpha
+        args['numTraining'] = numTraining
+        args['n_steps'] = n_steps
+        self.index = 0  # This is always Pacman
+        SarsaAgent.__init__(self, **args)
+
+    def getAction(self, state):
+        """
+        Simply calls the getAction method of QLearningAgent and then
+        informs parent of action for Pacman.  Do not change or remove this
+        method.
+        """
+
+        action = SarsaAgent.getCurrentAction(self)
+        # print("Get and do Action = " + str(action))
+        self.doAction(state, action)
+        return action
+
+
+class ApproximateNStepSarsaAgent(PacmanNStepSarsaAgent):
+    """
+       ApproximateQLearningAgent
+
+       You should only have to overwrite getQValue
+       and update.  All other QLearningAgent functions
+       should work as is.
+    """
+
+    def __init__(self, extractor='IdentityExtractor', **args):
+        self.featExtractor = util.lookup(extractor, globals())()
+        PacmanSarsaAgent.__init__(self, **args)
+        self.weights = util.Counter()
+
+    def getWeights(self):
+        return self.weights
+
+    def getQValue(self, state, action):
+        """
+          Should return Q(state,action) = w * featureVector
+          where * is the dotProduct operator
+        """
+        "*** YOUR CODE HERE ***"
+
+        features = self.featExtractor.getFeatures(state, action)
+
+        q_vec = [self.weights[feature] * features[feature] for feature in features]
+
+        return sum(q_vec)
 
     def update(self, state, action, nextState, reward):
         """
@@ -475,11 +559,11 @@ class SarsaLamdaAgent(SarsaAgent):
         """
         nextAction = self.epsilonGreedyAction(nextState)
 
-        diff = reward + self.discount * self.computeValueFromQValues(nextState,nextAction) - self.getQValue(state,action)
+        diff = reward + self.discount * self.computeValueFromQValues(nextState, nextAction) - self.getQValue(state, action)
         self.eligibility_Trace[(state, action)] = (1 - self.alpha) * self.eligibility_Trace[(state, action)] + 1
 
         if (state, action) not in self.visited:
-            self.visited.append((state,action))
+            self.visited.append((state, action))
 
         for key in self.visited:
             # print((key[0],key[1]))
@@ -488,14 +572,15 @@ class SarsaLamdaAgent(SarsaAgent):
 
         self.setCurrentAction(nextAction)
 
-    def startEpisode(self,state):
-        SarsaAgent.startEpisode(self,state)
+    def startEpisode(self, state):
+        SarsaAgent.startEpisode(self, state)
         self.visited.clear()
+
 
 class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
     "Exactly the same as QLearningAgent, but with different default parameters"
 
-    def __init__(self, epsilon=0.05,gamma=0.8,alpha=0.2, numTraining=0, **args):
+    def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, **args):
         """
         These default parameters can be changed from the pacman.py command line.
         For example, to change the exploration rate, try:
@@ -522,13 +607,13 @@ class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
 
         action = SarsaLamdaAgent.getCurrentAction(self)
         # print("Get and do Action = " + str(action))
-        self.doAction(state,action)
+        self.doAction(state, action)
         return action
 
-    def startEpisode(self,state):
+    def startEpisode(self, state):
         if self.episodesSoFar % 10 == 0:
             print("episode = " + str(self.episodesSoFar))
-        SarsaLamdaAgent.startEpisode(self,state)
+        SarsaLamdaAgent.startEpisode(self, state)
 
 
 class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
@@ -562,15 +647,14 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
 
         return sum(q_vec)
 
-    def getQValueOfFeature(self,features):
+    def getQValueOfFeature(self, features):
         q_vec = [self.weights[feature] * features[feature] for feature in features]
         return sum(q_vec)
 
-    def innerproduct(self,state,features):
+    def innerproduct(self, state, features):
         currentFeature = self.featExtractor.getFeatures(state, self.getCurrentAction())
         res = [self.eligibility_Trace[feature] * currentFeature[feature] for feature in features]
         return sum(res)
-
 
     def update(self, state, action, nextState, reward):
         """
@@ -601,9 +685,8 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
         self.setCurrentAction(nextAction)
         self.Q_old = nextQValue
 
-    def startEpisode(self,state):
+    def startEpisode(self, state):
         # sets firstAction in SarsaAgent
-        PacmanSarsaLamdaAgent.startEpisode(self,state)
+        PacmanSarsaLamdaAgent.startEpisode(self, state)
         self.eligibility_Trace.clear()
         self.Q_old = 0
-
