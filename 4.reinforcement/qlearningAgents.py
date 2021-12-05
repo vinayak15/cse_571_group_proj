@@ -15,7 +15,7 @@
 from game import *
 from learningAgents import ReinforcementAgent
 from featureExtractors import *
-
+import matplotlib.pyplot as plt
 import random,util,math
 
 class QLearningAgent(ReinforcementAgent):
@@ -532,7 +532,7 @@ class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
 
 class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
     """
-       ApproximateQLearningAgent
+       TrueOnlineSarsaLamda
 
        You should only have to overwrite getQValue
        and update.  All other QLearningAgent functions
@@ -576,9 +576,13 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
+        self.steps =self.steps+1
+
         currentFeature = self.featExtractor.getFeatures(state, self.getCurrentAction())
         nextAction = self.epsilonGreedyAction(nextState)
         currentQValue = self.getQValueOfFeature(currentFeature)
+
+        self.qvalue = self.qvalue+currentQValue
 
         if(nextState == "None" or nextState == None or nextAction == "None"):
             nextQValue = 0
@@ -611,4 +615,10 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             print(self.weights)
+            plot(self.rewards, string = 'Rewards per Iteration ')      # PLot for average reqards per iteration
+            plot(self.average_qvalues , string = 'Average Q value Per Iteration ' )          #PLot for average Q values for iteration
 
+def plot(rewards, string = None ):
+    plt.plot(rewards)  # plotting by columns
+    plt.title(string)
+    plt.show()
