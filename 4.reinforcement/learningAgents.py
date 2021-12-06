@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -132,6 +132,8 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.episodeRewards += deltaReward
         self.update(state,action,nextState,deltaReward)
 
+
+        self.steps =self.steps+1
     def startEpisode(self,state):
         """
           Called by environment when new episode is starting
@@ -157,9 +159,11 @@ class ReinforcementAgent(ValueEstimationAgent):
             self.epsilon = 0.0    # no exploration
             self.alpha = 0.0      # no learning
 
+
         self.rewards.append(self.episodeRewards)        #For convergence checking
 
         qvalue = self.qvalue /self.steps
+
         self.average_qvalues.append(qvalue)
     def isInTraining(self):
         return self.episodesSoFar < self.numTraining
@@ -184,7 +188,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.accumTestRewards = 0.0
         self.numTraining = int(numTraining)
         self.epsilon = float(epsilon)
-        self.alpha = float(alpha)
+        self.alpha = float(0.1)
         self.discount = float(gamma)
 
         self.rewards = []
