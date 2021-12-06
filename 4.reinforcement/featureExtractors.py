@@ -176,7 +176,7 @@ class SimpleExtractor(FeatureExtractor):
         return features
 
 
-class BetterExtractor(FeatureExtractor):
+class ImprovedExtractor(FeatureExtractor):
     """
     Returns simple features for a basic reflex Pacman:
     - whether food will be eaten
@@ -196,17 +196,18 @@ class BetterExtractor(FeatureExtractor):
         capsules = state.getCapsules()
         scared_ghosts = []
         non_scared_ghosts = []
-        nSteps = 20
+        nSteps = (walls.height+walls.width) / 2
         ghost_states = state.getGhostStates()
-        for ghost_state in ghost_states:
-            if ghost_state.scaredTimer > 1:  # will be scared for at least the next move
-                scared_ghosts.append(ghost_state.getPosition())
-            else:
-                non_scared_ghosts.append(ghost_state.getPosition())
 
         features = util.Counter()
 
         features["bias"] = 1.0
+
+        for ghost_state in ghost_states:
+            if ghost_state.scaredTimer > 1:
+                scared_ghosts.append(ghost_state.getPosition())
+            else:
+                non_scared_ghosts.append(ghost_state.getPosition())
 
         # compute the location of pacman after he takes the action
         x, y = state.getPacmanPosition()
@@ -218,20 +219,8 @@ class BetterExtractor(FeatureExtractor):
             g, walls) for g in non_scared_ghosts)
 
         # count the number of scared ghosts 1-step away
-        features["#-of-scared-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(
-            g, walls) for g in scared_ghosts)
-        # **********Commenting the ghost centroid extraction for now since I need to generalize it for more than 2 ghosts************
-        # if non_scared_ghosts:
-        #     centroid = lambda ghosts: (sum(gh[0] for gh in ghosts)/len(ghosts), sum(gh[1] for gh in ghosts)/len(ghosts))
-        #     ghostCentroid = non_scared_ghosts[0] if len(non_scared_ghosts) == 1 else centroid(non_scared_ghosts)
-        #     distance = lambda pac, centroid: math.sqrt((ghostCentroid[0]-pac[0])**2 + (ghostCentroid[1]-pac[1])**2)
-        #     features["non-scared-centroid-distance"] = distance((x,y), centroid(non_scared_ghosts))/ (walls.width * walls.height)
-
-        # if scared_ghosts:
-        #     centroid = lambda ghosts: (sum(gh[0] for gh in ghosts)/len(ghosts), sum(gh[1] for gh in ghosts)/len(ghosts))
-        #     ghostCentroid = scared_ghosts[0] if len(scared_ghosts) == 1 else centroid(scared_ghosts)
-        #     distance = lambda pac, centroid: math.sqrt((ghostCentroid[0]-pac[0])**2 + (ghostCentroid[1]-pac[1])**2)
-        #     features["scared-centroid-distance"] = distance((x,y), centroid(scared_ghosts))/ (walls.width * walls.height)
+        # features["#-of-scared-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(
+        #     g, walls) for g in scared_ghosts)
 
         if food[next_x][next_y]:
             features["can-eat-food"] = 1.0
@@ -244,7 +233,7 @@ class BetterExtractor(FeatureExtractor):
             # will diverge wildly
             features["closest-food"] = float(dist) / (walls.width * walls.height)
 
-        ret = closestObject((next_x, next_y), walls, nSteps, ghost_pos=[], capsule_pos=capsules, scared_ghost_pos=scared_ghosts)
+        ret = closestObject((next_x, next_y), walls, nSteps, ghost_pos=non_scared_ghosts, capsule_pos=capsules, scared_ghost_pos=scared_ghosts)
 
         min_ghost_pos = ret[0]
         min_cap_pos = ret[1]
@@ -252,29 +241,13 @@ class BetterExtractor(FeatureExtractor):
 
         # print("closest ghost = {} closest capsule = {} closest scared ghost  {}".format(min_ghost_pos,min_cap_pos,min_scared_ghost_pos))
 
-        # if min_ghost_pos is not float("inf"):
-        #     features["closest-non-scared_ghost"] = float(min_ghost_pos) / (walls.width * walls.height)
-        # if min_cap_pos is not float("inf"):
-        #     features["closest-capsule"] = float(min_cap_pos) / (walls.width * walls.height)
-        # if min_scared_ghost_pos is not float("inf"):
-        #     features["closest-scared_ghost"] = float(min_scared_ghost_pos) / (walls.width * walls.height)
+        if min_ghost_pos < float("inf"):
+            features["closest-non-scared_ghost"] = float(min_ghost_pos) / (walls.width * walls.height)
+        if min_cap_pos < float("inf"):
+            features["closest-capsule"] = float(min_cap_pos) / (walls.width * walls.height)
+        if min_scared_ghost_pos < float("inf"):
+            features["closest-scared_ghost"] = float(min_scared_ghost_pos) / (walls.width * walls.height)
 
-
-        dist = closestObject2((next_x, next_y), capsules, walls)
-        if dist is not None:
-            # make the distance a number less than one otherwise the update
-            # will diverge wildly
-            features["closest-capsule"] = float(dist) / (walls.width * walls.height)
-
-        # print("closest capsule = " + str(dist))
-        dist = closestObject2((next_x, next_y), scared_ghosts, walls)
-        if dist is not None:
-            # make the distance a number less than one otherwise the update
-            # will diverge wildly
-            features["closest-scared_ghost"] = float(dist) / (walls.width * walls.height)
-
-        # print("closest scared ghost = " + str(dist))
-        # exit()
         features.divideAll(10.0)
         return features
 

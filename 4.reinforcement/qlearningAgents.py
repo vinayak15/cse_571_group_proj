@@ -16,10 +16,11 @@ import matplotlib.pyplot as plt
 import math
 import util
 import random
+
+from GraphPlot import plot
 from game import *
 from learningAgents import ReinforcementAgent
 from featureExtractors import *
-import matplotlib.pyplot as plt
 import random,util,math
 
 from game import *
@@ -290,6 +291,9 @@ class SarsaAgent(ReinforcementAgent):
         max_value = float("-inf")
         for action in actions:
             q_value = self.getQValue(state, action)
+            if max_value == q_value:
+                max_action = max_action if util.flipCoin(0.5) else action
+                continue
             max_action = max_action if max_value > q_value else action
             max_value = max_value if max_value > q_value else q_value
 
@@ -475,7 +479,7 @@ class SarsaLamdaAgent(SarsaAgent):
         SarsaAgent.__init__(self, **args)
 
         self.eligibility_Trace = util.Counter()
-        self.lamda = 0.965
+        self.lamda = 0.9
         self.visited = []
 
     def update(self, state, action, nextState, reward):
@@ -559,6 +563,7 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
         PacmanSarsaLamdaAgent.__init__(self, **args)
         self.weights = util.Counter()
         self.Q_old = 0
+        self.alpha = 0.1
 
     def getWeights(self):
         return self.weights
@@ -597,7 +602,7 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
         nextAction = self.epsilonGreedyAction(nextState)
         currentQValue = self.getQValueOfFeature(currentFeature)
 
-        self.qvalue = self.qvalue+currentQValue
+
 
         if(nextState == "None" or nextState == None or nextAction == "None"):
             nextQValue = 0
@@ -615,6 +620,7 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
             self.weights[feature] += self.alpha * (diff + currentQValue - self.Q_old) * self.eligibility_Trace[feature]
             self.weights[feature] -= self.alpha * (currentQValue - self.Q_old) * currentFeature[feature]
 
+        self.qvalue = self.qvalue + self.getQValueOfFeature(currentFeature)
         # print("Updating current action = " + str(nextAction))
         self.setCurrentAction(nextAction)
         self.Q_old = nextQValue
@@ -624,6 +630,11 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
         PacmanSarsaLamdaAgent.startEpisode(self,state)
         self.eligibility_Trace.clear()
         self.Q_old = 0
+        if self.episodesSoFar > self.numTraining + 100:
+            self.alpha = 0.01
+        if self.episodesSoFar > self.numTraining + 200:
+            self.alpha = 0.005
+
 
     def final(self, state):
         PacmanSarsaLamdaAgent.final(self,state)
@@ -633,23 +644,3 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
             plot(self.rewards, string = 'Rewards per Iteration TrueOnlineSarsaLamda our code')      # PLot for average reqards per iteration
             plot(self.average_qvalues , string = 'Average Q value Per Iteration TrueOnlineSarsaLamda Our code' )          #PLot for average Q values for iteration
 
-
-
-
-def plot(rewards, string = None ):
-    array = []
-    sum=0
-    print(len(rewards))
-
-    for i, reward in enumerate(rewards):
-        if (i+1)%10==0:
-            sum=sum+reward
-            sum=sum/10
-            array.append(sum)
-            sum=0
-        else:
-            sum =sum+reward
-
-    plt.plot(array)  # plotting by columns
-    plt.title(string)
-    plt.show()

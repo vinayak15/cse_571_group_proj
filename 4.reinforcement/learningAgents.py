@@ -159,8 +159,8 @@ class ReinforcementAgent(ValueEstimationAgent):
             self.epsilon = 0.0    # no exploration
             self.alpha = 0.0      # no learning
 
-
-        self.rewards.append(self.episodeRewards)        #For convergence checking
+        # For convergence checking
+        self.rewards.append(self.episodeRewards)
 
         qvalue = self.qvalue /self.steps
 
@@ -188,7 +188,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.accumTestRewards = 0.0
         self.numTraining = int(numTraining)
         self.epsilon = float(epsilon)
-        self.alpha = float(0.1)
+        self.alpha = float(alpha)
         self.discount = float(gamma)
 
         self.rewards = []

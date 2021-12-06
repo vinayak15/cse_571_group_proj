@@ -45,6 +45,7 @@ from game import Directions
 from game import Actions
 from util import nearestPoint
 from util import manhattanDistance
+import GraphPlot
 import util
 import layout
 import sys
@@ -718,6 +719,7 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
               (wins.count(True), len(wins), winRate))
         print('Record:       ', ', '.join(
             [['Loss', 'Win'][int(w)] for w in wins]))
+
 
     return games
 
