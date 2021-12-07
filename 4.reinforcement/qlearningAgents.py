@@ -713,18 +713,3 @@ class SarsaNStepAgent(TrueOnlineSarsaLamda):
         self.n = 3
         self.t = 0
         self.T = float('inf')
-
-
-class PacmanNStepSarsaAgent(SarsaNStepAgent):
-
-    def getAction(self, state):
-        """
-        Simply calls the getAction method of QLearningAgent and then
-        informs parent of action for Pacman.  Do not change or remove this
-        method.
-        """
-
-        action = SarsaLamdaAgent.getCurrentAction(self)
-        # print("Get and do Action = " + str(action))
-        self.doAction(state, action)
-        return action
