@@ -134,6 +134,7 @@ class ReinforcementAgent(ValueEstimationAgent):
 
 
         self.steps =self.steps+1
+
     def startEpisode(self,state):
         """
           Called by environment when new episode is starting
@@ -141,7 +142,6 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.lastState = None
         self.lastAction = None
         self.episodeRewards = 0.0
-
         self.qvalue = 0
         self.steps = 0
 
@@ -188,7 +188,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.accumTestRewards = 0.0
         self.numTraining = int(numTraining)
         self.epsilon = float(epsilon)
-        self.alpha = float(alpha)
+        self.alpha = float(0.1)
         self.discount = float(gamma)
 
         self.rewards = []

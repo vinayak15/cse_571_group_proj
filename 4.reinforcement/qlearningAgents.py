@@ -190,6 +190,7 @@ class ApproximateQAgent(PacmanQAgent):
         self.featExtractor = util.lookup(extractor, globals())()
         PacmanQAgent.__init__(self, **args)
         self.weights = util.Counter()
+        self.alpha = 0.1
 
     def getWeights(self):
         return self.weights
@@ -212,21 +213,22 @@ class ApproximateQAgent(PacmanQAgent):
         """
         features = self.featExtractor.getFeatures(state, action)
         diff = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
-        self.qvalue = self.qvalue + self.getQValue(state, action)
+
 
         for feature in features:
             weight = features[feature]
             self.weights[feature] = self.weights[feature] + (self.alpha * diff * weight)
 
+        self.qvalue = self.qvalue + self.getQValue(state, action)
     def final(self, state):
         "Called at the end of each game."
         # call the super-class final method
         PacmanQAgent.final(self, state)
-        if self.numTraining == self.episodesSoFar:
-            print(self.rewards)
-            print(self.average_qvalues)
-            plot(self.rewards, 'rewards for Approximate Q  Agent')
-            plot(self.average_qvalues, 'average q value  for Approximate Q Agent')
+        if self.numTraining==self.episodesSoFar:
+            # print(self.rewards)
+            # print(self.average_qvalues)
+            plot(self.rewards, 'Rewards for Approximate Q  Agent')
+            plot(self.average_qvalues, 'Average q value  for Approximate Q Agent')
 
 
 class SarsaAgent(ReinforcementAgent):
@@ -467,6 +469,7 @@ class ApproximateSarsaAgent(PacmanSarsaAgent):
         for feature in features:
             self.weights[feature] += self.alpha * difference * features[feature]
 
+        self.qvalue = self.qvalue + self.getQValue(state, action )
         # print("Updating current action = " + str(nextAction))
         self.setCurrentAction(nextAction)
 
@@ -511,7 +514,7 @@ class SarsaLamdaAgent(SarsaAgent):
 
 
 class PacmanSarsaLamdaAgent(SarsaLamdaAgent):
-    "Exactly the same as QLearningAgent, but with different default parameters"
+    "Exactly t`he same as QLearningAgent, but with different default parameters"
 
     def __init__(self, epsilon=0.05, gamma=0.8, alpha=0.2, numTraining=0, **args):
         """
@@ -595,7 +598,6 @@ class TrueOnlineSarsaLamda(PacmanSarsaLamdaAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        self.steps = self.steps+1
 
         currentFeature = self.featExtractor.getFeatures(state, self.getCurrentAction())
         nextAction = self.epsilonGreedyAction(nextState)

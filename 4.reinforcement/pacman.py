@@ -719,6 +719,18 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
               (wins.count(True), len(wins), winRate))
         print('Record:       ', ', '.join(
             [['Loss', 'Win'][int(w)] for w in wins]))
+        f = open("Power classic results.txt", "a")
+        print(str(pacman))
+        f.write(str(pacman))
+        f.write('Score list = \n' + str(scores))
+        f.write('Wins list = \n' + str(wins))
+        f.write('\nTraining eposides = {0}'.format(numTraining))
+        f.write("\n\n Average Score: \n \n")
+        f.write(str(sum(scores) / float(len(scores))))
+        f.write("\n \n Average WinRate: \n \n")
+        f.write(str(winRate))
+        f.write("\n\n\n")
+        f.close()
 
 
     return games
