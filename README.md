@@ -1,5 +1,7 @@
 <h1> Reinforcement Learning </h1>
 
+<img src = 'Pacman.gif' alt="TrueOnline Sarsa Pacman Agent" title="True Online SarsaPacman Agent" width='700'/> 
+
 This final project is part of our course CSE 571 at ASU and is adapted from CS188 UC Berkeley. 
 There are multiple games in this project like Pacman, Maze Solver and Crawler. 
 Our task is to train our agent to solve this problem with a good score and intelligently like a human would do. <br /><br />
@@ -17,7 +19,7 @@ For that we use Reinforcement Learning methods, mainly Q Learning, TrueOnlineSar
 
 To run the code use the following command for Pacman Game
 
-python pacman.py -p TrueOnlineSarsaLamda -a extractor=SimpleExtractor -x 500 -n 550 -l originalClassic -f -q
+python pacman.py -p TrueOnlineSarsaLamda -a extractor=ImprovedExtractor -x 500 -n 550 -l originalClassic
 
 Options:
 
@@ -39,9 +41,9 @@ Options :
 			-n : for noise
 			-e : for epsilon
 			-k : number of training iteration
-<img src = 'q%20learning%20.png' alt="Q Learning" title="Q Learning" width='200'/> <t /> <img src = 'smlanda.png' alt="True Online Sarsa" title="True Online Sarsa" width='205' />
+<img src = 'Q%20learning.gif' alt="Q Learning" title="Q Learning" width='400'/> <t /> <img src = 'True%20Online%20Sarsa%20Lamda.gif' alt="True Online Sarsa" title="True Online Sarsa" width='405' />
 
-Here are two images attached for gridworld where the first image is of Q Learning with Linear function approximation, here image is after 10 episodes still we can see many state action values are 0, which means many values have not been updated and we don't know how good this state is. This is not near to convergence and here the state action value is updated after the episode is complete. <br />
-Second image is of True Online Sarsa Agent with linear function approximation and after 10 iterations we see that all important state actions are updated because this agent updates values during iteration also,tHese values are near convergence.  <br />
+Here are two images attached for gridworld where the first image is of Q Learning with Linear function approximation and second image is of TrueOnline Sarsa lamda.
+Initially Q learning completed it's first iteration faster than TrueOnline Sarsa Lamda but after TrueOnline Sarsa Lamda completes it's first iteration it updates values of all states which were visited to reach terminal state. But in  Q learnining, Q values update depend only on next state and it updates after iteration episode is completed in each episode. Once reaching terminal state in first episode TrueOnline Sarsa Lambda updates it's Q values during iteration also. <br />
 
 Here we can see the major advantage of TrueOnline Sarsa Lambda over Q learning methods.
