@@ -1,6 +1,8 @@
 <h1> Reinforcement Learning </h1>
+<img src = 'Pacman.gif' alt="TrueOnline Sarsa lambda" title="TrueOnline Sarsa lambda" width='500'/> 
+<img src = 'pacman%20Q%20learning.gif' alt=" Q Learning" title="Q Learning" width='500'/> 
+First image is for True Online Sarsa Lambda Agent and we can clearly seen in few places Q learning agent is confused which step to perform but our TrueOnline Sarsa Lamda Agent performs equally good as human being and both of them win in this game setup
 
-<img src = 'Pacman.gif' alt="TrueOnline Sarsa Pacman Agent" title="True Online SarsaPacman Agent" width='700'/> 
 
 This final project is part of our course CSE 571 at ASU and is adapted from CS188 UC Berkeley. 
 There are multiple games in this project like Pacman, Maze Solver and Crawler. 
@@ -10,6 +12,7 @@ qlearningAgents.py:Q-learning, TrueOnline Sarsa, Episodic Semi Gradient agents f
 learningAgents.py: Defines the baseclasses ValueEstimation Agent and QLearningAgent, <br />
 Gridworld.py: The Gridworld implementation.<br />
 featureExtractors.py : Classes for extracting features on (state, action) pairs.<br />
+
 
 For that we use Reinforcement Learning methods, mainly Q Learning, TrueOnlineSarsa and Episodic SemiGradient Sarsa with linear function approximation. Features used in the program are n-step BFS to search ghost location, closest food , power pallet, scared ghost location and  height and width of grid, location of agent, and current state, which is the image of the grid that is visible to the agent to make all decisions. Agent needs to update weights of the features based on state for making the next move. <br />
 
